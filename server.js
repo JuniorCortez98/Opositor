@@ -1,5 +1,5 @@
-// Servidor estático mínimo (sin dependencias) para la plataforma Opositor · AGE.
-// Uso: node server.js [--open]
+// Servidor estático nativo para la plataforma Opositor · AGE.
+// Compatible con ejecución local (node server.js [--open]) y despliegues en Vercel.
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -21,7 +21,7 @@ const MIME = {
   '.woff2': 'font/woff2',
 };
 
-const server = http.createServer((req, res) => {
+function handler(req, res) {
   let pathname = decodeURIComponent(req.url.split('?')[0]);
   if (pathname === '/') pathname = '/index.html';
   const filePath = path.join(ROOT, path.normalize(pathname));
@@ -33,38 +33,63 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  fs.readFile(filePath, (err, data) => {
-    if (err) {
-      res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-      res.end('404 - No encontrado');
+  fs.stat(filePath, (err, stats) => {
+    // Si el archivo no existe (por ejemplo, una ruta interna de la aplicación), sirve index.html
+    if (err || !stats.isFile()) {
+      const fallbackPath = path.join(ROOT, 'index.html');
+      fs.readFile(fallbackPath, (fallbackErr, data) => {
+        if (fallbackErr) {
+          res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+          res.end('404 - No encontrado');
+        } else {
+          res.writeHead(200, { 'Content-Type': MIME['.html'] });
+          res.end(data);
+        }
+      });
       return;
     }
-    const tipo = MIME[path.extname(filePath).toLowerCase()] || 'application/octet-stream';
-    res.writeHead(200, { 'Content-Type': tipo });
-    res.end(data);
+
+    fs.readFile(filePath, (readErr, data) => {
+      if (readErr) {
+        res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.end('500 - Error interno');
+        return;
+      }
+      const tipo = MIME[path.extname(filePath).toLowerCase()] || 'application/octet-stream';
+      res.writeHead(200, { 'Content-Type': tipo });
+      res.end(data);
+    });
   });
-});
+}
 
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`El puerto ${PORT} esta ocupado. Prueba otro: $env:PORT=5501; node server.js`);
-  } else {
-    console.error(err);
-  }
-  process.exit(1);
-});
+// Exportar el manejador para Vercel Serverless
+module.exports = handler;
 
-server.listen(PORT, () => {
-  const url = `http://localhost:${PORT}/`;
-  console.log(`Opositor AGE en marcha: ${url}`);
-  console.log('Pulsa Ctrl+C para detener el servidor.');
-  if (process.argv.includes('--open')) {
-    const cmd =
-      process.platform === 'win32'
-        ? `start "" "${url}"`
-        : process.platform === 'darwin'
-          ? `open "${url}"`
-          : `xdg-open "${url}"`;
-    exec(cmd);
-  }
-});
+// Arrancar puerto de escucha local únicamente si se ejecuta directamente con Node
+if (require.main === module && !process.env.VERCEL) {
+  const server = http.createServer(handler);
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`El puerto ${PORT} está ocupado. Prueba otro: $env:PORT=5501; node server.js`);
+    } else {
+      console.error(err);
+    }
+    process.exit(1);
+  });
+
+  server.listen(PORT, () => {
+    const url = `http://localhost:${PORT}/`;
+    console.log(`Opositor AGE en marcha: ${url}`);
+    console.log('Pulsa Ctrl+C para detener el servidor.');
+    if (process.argv.includes('--open')) {
+      const cmd =
+        process.platform === 'win32'
+          ? `start "" "${url}"`
+          : process.platform === 'darwin'
+            ? `open "${url}"`
+            : `xdg-open "${url}"`;
+      exec(cmd);
+    }
+  });
+}
