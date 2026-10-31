@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Opositor AGE · Plataforma de Preparación (BOE)</title>
+<meta name="description" content="Plataforma de estudio para las oposiciones de la Administración General del Estado: resúmenes, esquemas, infografías, test y planificación." />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+<div class="app">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">AGE</div>
+      <div class="brand-text">
+        <strong>Opositor · AGE</strong>
+        <span>Preparación oficial BOE</span>
+      </div>
+    </div>
+
+    <div class="coverage">
+      <div class="coverage-head">
+        <span>Cobertura del temario</span>
+        <b id="coveragePct">0%</b>
+      </div>
+      <div class="coverage-bar"><i id="coverageBar" style="width:0%"></i></div>
+      <small id="coverageTxt">0 de 0 temas completados</small>
+    </div>
+
+    <nav class="temario" id="temarioNav" aria-label="Temario oficial"></nav>
+
+    <div class="sidebar-foot">
+      <button class="ghost-btn" data-cmd="/calendario">Calendario de estudio</button>
+      <button class="ghost-btn" data-cmd="/progreso">Cuadro de mando</button>
+      <button class="ghost-btn" data-cmd="/ayuda">Comandos disponibles</button>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="main">
+    <header class="topbar">
+      <button class="icon-btn only-mobile" id="menuBtn" aria-label="Abrir menú">☰</button>
+      <div class="topbar-title">
+        <h1>Preparación de Oposiciones · Administración General del Estado</h1>
+        <p>Temario oficial del BOE · INAP · Cuerpos Generales</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="themeBtn" title="Cambiar tema" aria-label="Cambiar tema">◐</button>
+        <button class="icon-btn" id="clearBtn" title="Reiniciar progreso" aria-label="Reiniciar progreso">⟲</button>
+      </div>
+    </header>
+
+    <section class="content" id="content" aria-live="polite"></section>
+
+    <footer class="console">
+      <div class="chips" id="chips">
+        <button class="chip" data-cmd="/estudiar Bloque I - Tema 1">/estudiar</button>
+        <button class="chip" data-cmd="/esquema Bloque I - Tema 1">/esquema</button>
+        <button class="chip" data-cmd="/infografia Bloque III - Tema 3">/infografia</button>
+        <button class="chip" data-cmd="/test Bloque I - Tema 1 10">/test</button>
+        <button class="chip" data-cmd="/calendario">/calendario</button>
+        <button class="chip" data-cmd="/progreso">/progreso</button>
+      </div>
+      <form class="console-form" id="consoleForm" autocomplete="off">
+        <span class="prompt">›</span>
+        <input id="cmdInput" type="text" placeholder="/estudiar Bloque I - Tema 1   ·   /test Bloque III - Tema 3 20   ·   /ayuda" aria-label="Comando" />
+        <button type="submit" class="send-btn">Ejecutar</button>
+      </form>
+    </footer>
+  </main>
+</div>
+
+<!-- Librerías externas: renderizado de Markdown y diagramas Mermaid -->
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

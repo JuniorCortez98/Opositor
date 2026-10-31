@@ -1,0 +1,10 @@
+{
+  "name": "opositor-age",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Plataforma de preparación de oposiciones de la Administración General del Estado (temario oficial BOE)",
+  "scripts": {
+    "start": "node server.js --open",
+    "serve": "node server.js"
+  }
+}
